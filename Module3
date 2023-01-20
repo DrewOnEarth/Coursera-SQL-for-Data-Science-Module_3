@@ -1,0 +1,97 @@
+1.
+Question 1
+All of the questions in this quiz refer to the open source Chinook Database. Please familiarize yourself with the ER diagram in order to familiarize yourself with the table and column names in order to write accurate queries and get the appropriate answers.
+
+Using a subquery, find the names of all the tracks for the album "Californication".
+
+SELECT name
+	,albumid
+FROM TRACKS
+WHERE albumid = (
+		SELECT albumid
+		FROM albums
+		WHERE title = "Californication"
+		)
+    
+2.
+Find the total number of invoices for each customer along with the customer's full name, city and email.
+After running the query described above, what is the email address of the 5th person, František Wichterlová? Enter the answer below (feel free to copy and paste).
+
+SELECT a.FirstName
+	,a.LastName
+	,a.City
+	,a.Email
+	,count(a.InvoiceId) AS TotalNum
+FROM (
+	SELECT Customers.FirstName
+		,Customers.LastName
+		,Customers.City
+		,Customers.Email
+		,Invoices.InvoiceId
+	FROM Customers
+	LEFT JOIN Invoices ON Customers.CustomerId = Invoices.CustomerId
+	) AS a
+GROUP BY a.FirstName
+HAVING a.FirstName = "František";
+
+3.
+Retrieve the track name, album, artistID, and trackID for all the albums.
+What is the song title of trackID 12 from the "For Those About to Rock We Salute You" album? Enter the answer below.
+
+SELECT albums.title
+	,tracks.trackid
+	,tracks.name
+FROM albums
+LEFT JOIN tracks ON albums.albumid = tracks.albumid
+WHERE albums.title LIKE "For Those About to Rock We Salute You"
+
+
+4.
+Retrieve a list with the managers last name, and the last name of the employees who report to him or her.
+After running the query described above, who are the reports for the manager named Mitchell (select all that apply)?
+
+SELECT a.lastname AS Employee_last
+	,a.reportsto
+	,b.lastname AS Manager_last
+FROM employees AS a
+LEFT JOIN employees AS b ON a.reportsto = b.employeeid
+WHERE b.lastname LIKE "Mitchell"
+
+
+5.
+Find the name and ID of the artists who do not have albums. 
+After running the query described above, two of the records returned have the same last name. Enter that name below.
+
+SELECT al.title
+	,ar.name
+FROM artists AS ar
+LEFT JOIN albums AS al ON ar.artistid = al.artistid
+WHERE al.title IS NULL
+
+
+6.
+Use a UNION to create a list of all the employee's and customer's first names and last names ordered by the last name in descending order.
+After running the query described above, determine what is the last name of the 6th record? Enter it below. Remember to order things in descending order to be sure to get the correct answer.
+
+SELECT e.firstname
+	,e.lastname
+FROM employees AS e
+
+UNION
+
+SELECT c.firstname
+	,c.lastname
+FROM customers AS c
+ORDER BY e.lastname DESC
+
+
+7.
+See if there are any customers who have a different city listed in their billing city versus their customer city.
+
+SELECT C.FirstName
+	,C.LastName
+	,C.City AS CustomerCity
+	,I.BillingCity
+FROM Customers C
+INNER JOIN Invoices I ON C.CustomerId = I.CustomerId
+WHERE CustomerCity != BillingCity
